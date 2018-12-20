@@ -8,9 +8,9 @@ import android.view.MenuItem;
 
 import com.dev.liwa.reclamation.AddActivity;
 import com.dev.liwa.reclamation.FavoritesActivity;
-import com.dev.liwa.reclamation.MainActivity;
+import com.dev.liwa.reclamation.Home.MainActivity;
 import com.dev.liwa.reclamation.MapActivity;
-import com.dev.liwa.reclamation.ProfileActivity;
+import com.dev.liwa.reclamation.Profile.ProfileActivity;
 import com.dev.liwa.reclamation.R;
 
 public class ButtomNavigationHelper {
