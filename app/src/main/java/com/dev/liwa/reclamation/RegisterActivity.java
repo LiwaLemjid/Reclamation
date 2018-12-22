@@ -50,9 +50,11 @@ public class RegisterActivity extends AppCompatActivity {
         firebaseMethods = new FirebaseMethods(mContext);
         Log.d(TAG, "onCreate: started.");
 
+
         initWidgets();
-        setupFirebaseAuth();
         init();
+        setupFirebaseAuth();
+
     }
 
     private void init(){
@@ -87,7 +89,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void initWidgets(){
         Log.d(TAG, "initWidgets: Initializing Widgets.");
         mEmail = (EditText) findViewById(R.id.input_email);
-        mUsername = (EditText) findViewById(R.id.input_username);
+        mUsername = (EditText) findViewById(R.id.username);
         btnRegister = (Button) findViewById(R.id.btn_register);
         mProgressBar = (ProgressBar) findViewById(R.id.progressBar);
         loadingPleaseWait = (TextView) findViewById(R.id.loadingPleaseWait);
@@ -134,12 +136,14 @@ public class RegisterActivity extends AppCompatActivity {
                     myRef.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
+                            System.out.println("data    :"+dataSnapshot);
+                            System.out.println("username:"+username);
                             //1st check: Make sure the username is not already in use
                             if(firebaseMethods.checkIfUsernameExists(username, dataSnapshot)){
                                 append = myRef.push().getKey().substring(3,10);
                                 Log.d(TAG, "onDataChange: username already exists. Appending random string to name: " + append);
                             }
-                            username = username + append;
+                            //username = username + append;
 
                             //add new user to the database
                             //add new user_account_settings to the database

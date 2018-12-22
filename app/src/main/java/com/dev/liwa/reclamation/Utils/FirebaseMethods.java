@@ -34,6 +34,8 @@ public class FirebaseMethods {
     public FirebaseMethods(Context context) {
         mAuth = FirebaseAuth.getInstance();
         mContext = context;
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
 
         if(mAuth.getCurrentUser() != null){
             userID = mAuth.getCurrentUser().getUid();
@@ -77,13 +79,14 @@ public class FirebaseMethods {
 
         User user = new User();
 
-        for (DataSnapshot ds: datasnapshot.getChildren()){
+        for (DataSnapshot ds: datasnapshot.child(userID).getChildren()){
             Log.d(TAG, "checkIfUsernameExists: datasnapshot: " + ds);
 
             user.setUsername(ds.getValue(User.class).getUsername());
+            System.out.println("user.usernameee:"+user.getUsername());
             Log.d(TAG, "checkIfUsernameExists: username: " + user.getUsername());
 
-            if(StringManipulation.expandUsername(user.getUsername()).equals(username)){
+            if(user.getUsername().equals(username)){
                 Log.d(TAG, "checkIfUsernameExists: FOUND A MATCH: " + user.getUsername());
                 return true;
             }
