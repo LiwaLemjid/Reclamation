@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.dev.liwa.reclamation">
+
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
@@ -22,7 +23,9 @@
         <activity android:name=".MapActivity" />
         <activity android:name=".FavoritesActivity" />
         <activity android:name=".AddActivity" />
-        <activity android:name=".AccountSettingActivity"></activity>
+        <activity android:name=".AccountSettingActivity" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".RegisterActivity"></activity>
     </application>
 
 </manifest>
