@@ -1,9 +1,10 @@
-package com.dev.liwa.reclamation;
+package com.dev.liwa.reclamation.Login;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.dev.liwa.reclamation.Home.MainActivity;
+import com.dev.liwa.reclamation.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -19,7 +20,6 @@ import android.widget.Toast;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -93,6 +93,7 @@ public class LoginActivity extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
+                                    FirebaseUser user = mAuth.getCurrentUser();
 
                                     // If sign in fails, display a message to the user. If sign in succeeds
                                     // the auth state listener will be notified and logic to handle the
@@ -106,11 +107,20 @@ public class LoginActivity extends AppCompatActivity {
                                         mPleaseWait.setVisibility(View.GONE);
                                     }
                                     else{
-                                        Log.d(TAG, "signInWithEmail: successful login");
-                                        Toast.makeText(LoginActivity.this, "Login successful",
-                                                Toast.LENGTH_SHORT).show();
-                                        mProgressBar.setVisibility(View.GONE);
-                                        mPleaseWait.setVisibility(View.GONE);
+                                        try{
+                                            if(user.isEmailVerified()){
+                                                Log.d(TAG, "onComplete: success. email is verified.");
+                                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                startActivity(intent);
+                                            }else{
+                                                Toast.makeText(mContext, "Email is not verified \n check your email inbox.", Toast.LENGTH_SHORT).show();
+                                                mProgressBar.setVisibility(View.GONE);
+                                                mPleaseWait.setVisibility(View.GONE);
+                                                mAuth.signOut();
+                                            }
+                                        }catch (NullPointerException e){
+                                            Log.e(TAG, "onComplete: NullPointerException: " + e.getMessage() );
+                                        }
                                     }
 
                                     // ...

@@ -24,8 +24,8 @@
         <activity android:name=".FavoritesActivity" />
         <activity android:name=".AddActivity" />
         <activity android:name=".AccountSettingActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".RegisterActivity"></activity>
+        <activity android:name=".Login.LoginActivity" />
+        <activity android:name=".Login.RegisterActivity"></activity>
     </application>
 
 </manifest>
