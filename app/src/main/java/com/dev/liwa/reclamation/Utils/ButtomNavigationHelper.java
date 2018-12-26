@@ -6,7 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.view.MenuItem;
 
-import com.dev.liwa.reclamation.AddActivity;
+import com.dev.liwa.reclamation.Share.AddActivity;
 import com.dev.liwa.reclamation.FavoritesActivity;
 import com.dev.liwa.reclamation.Home.MainActivity;
 import com.dev.liwa.reclamation.MapActivity;
