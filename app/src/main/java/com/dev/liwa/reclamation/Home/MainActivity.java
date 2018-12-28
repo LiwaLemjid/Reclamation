@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
         setupViewPager();
-        mAuth.signOut();
+       // mAuth.signOut();
     }
 
     private void setupViewPager (){

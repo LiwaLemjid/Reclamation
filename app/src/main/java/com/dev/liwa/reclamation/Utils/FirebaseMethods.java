@@ -1,20 +1,27 @@
 package com.dev.liwa.reclamation.Utils;
 
 import android.content.Context;
+import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.dev.liwa.reclamation.Models.User;
 import com.dev.liwa.reclamation.Models.UserAccountSettings;
+import com.dev.liwa.reclamation.Models.UserSettings;
 import com.dev.liwa.reclamation.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FirebaseMethods {
 
@@ -37,18 +44,19 @@ public class FirebaseMethods {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         myRef = mFirebaseDatabase.getReference();
 
-        if(mAuth.getCurrentUser() != null){
+        if (mAuth.getCurrentUser() != null) {
             userID = mAuth.getCurrentUser().getUid();
         }
     }
 
     /**
      * Register a new email and password to Firebase Authentication
+     *
      * @param email
      * @param password
      * @param username
      */
-    public void registerNewEmail(final String email, String password, final String username){
+    public void registerNewEmail(final String email, String password, final String username) {
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                     @Override
@@ -62,8 +70,7 @@ public class FirebaseMethods {
                             Toast.makeText(mContext, "Failed to register",
                                     Toast.LENGTH_SHORT).show();
 
-                        }
-                        else if(task.isSuccessful()){
+                        } else if (task.isSuccessful()) {
                             userID = mAuth.getCurrentUser().getUid();
                             Log.d(TAG, "onComplete: Authstate changed: " + userID);
                         }
@@ -73,20 +80,19 @@ public class FirebaseMethods {
     }
 
 
-
-    public boolean checkIfUsernameExists(String username, DataSnapshot datasnapshot){
+    public boolean checkIfUsernameExists(String username, DataSnapshot datasnapshot) {
         Log.d(TAG, "checkIfUsernameExists: checking if " + username + " already exists.");
 
         User user = new User();
 
-        for (DataSnapshot ds: datasnapshot.child(userID).getChildren()){
+        for (DataSnapshot ds : datasnapshot.child(userID).getChildren()) {
             Log.d(TAG, "checkIfUsernameExists: datasnapshot: " + ds);
 
             user.setUsername(ds.getValue(User.class).getUsername());
-            System.out.println("user.usernameee:"+user.getUsername());
+            System.out.println("user.usernameee:" + user.getUsername());
             Log.d(TAG, "checkIfUsernameExists: username: " + user.getUsername());
 
-            if(user.getUsername().equals(username)){
+            if (user.getUsername().equals(username)) {
                 Log.d(TAG, "checkIfUsernameExists: FOUND A MATCH: " + user.getUsername());
                 return true;
             }
@@ -95,9 +101,9 @@ public class FirebaseMethods {
     }
 
 
-    public void addNewUser(String email, String username, String password, String description, String profile_photo){
+    public void addNewUser(String email, String username, String password, String description, String profile_photo) {
 
-        User user = new User( userID,   email, password, username);
+        User user = new User(userID, email, password, username);
 
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userID)
@@ -121,4 +127,132 @@ public class FirebaseMethods {
 
     }
 
+    /**
+     * Retireves the account settings for the user currently logged in
+     * Database : user_account_settings node
+     *
+     * @param dataSnapshot
+     * @return
+     */
+    public UserSettings getUserSettings(DataSnapshot dataSnapshot) {
+        Log.d(TAG, "getUserAccountSettings:retrieving user account settings");
+
+
+        UserAccountSettings settings = new UserAccountSettings();
+        User user = new User();
+
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+
+            //user_account_settings node
+            if (ds.getKey().equals(mContext.getString(R.string.dbname_user_account_settings))) {
+                Log.d(TAG, "getUserAccountSettings: " + ds.child(userID).getValue(UserAccountSettings.class));
+
+                try {
+
+
+                    settings.setDisplay_name(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getDisplay_name()
+                    );
+                    settings.setUsername(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getUsername()
+                    );
+                    settings.setDescription(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getDescription()
+                    );
+                    settings.setProfile_photo(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getProfile_photo()
+                    );
+                    settings.setFollowers(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getFollowers()
+                    );
+                    settings.setFollowing(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getFollowing()
+                    );
+                    settings.setPosts(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getPosts()
+                    );
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "NullPointerException" + e.getMessage());
+                }
+            }
+
+            if (ds.getKey().equals(mContext.getString(R.string.dbname_users))) {
+                HashMap<String,String> ld = (HashMap<String, String>) ds.child(userID).getValue();
+                for (Map.Entry<String,String>a:ld.entrySet()) {
+
+                    Log.d(TAG, "getUser: " + a.getKey());
+                    Log.d(TAG, "getUser: " + a.getValue());
+
+                }
+                user.setUsername(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getUsername()
+                );
+                user.setEmail(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getEmail()
+                );
+                user.setUser_id(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getUser_id()
+                );
+                user.setPassword(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getPassword()
+                );
+
+            }
+        }
+        return new UserSettings(user, settings);
+
+    }
+
+    /**
+     * update the email in the 'user's' node and 'usersetting node
+     * @param username
+     */
+    public void updateUsername (String username ){
+        Log.d(TAG,"Updating username to "+username);
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(userID)
+                .child(mContext.getString(R.string.field_username))
+                .setValue(username);
+
+        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
+                .child(userID)
+                .child(mContext.getString(R.string.field_username))
+                .setValue(username);
+    }
+
+    /**
+     * update the email in the 'user's' node
+     * @param email
+     */
+    public void updateEmail(String email){
+        Log.d(TAG, "updateEmail: upadting email to: " + email);
+
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(userID)
+                .child(mContext.getString(R.string.field_email))
+                .setValue(email);
+
+    }
 }

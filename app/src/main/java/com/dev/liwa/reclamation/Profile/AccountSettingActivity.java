@@ -1,6 +1,8 @@
-package com.dev.liwa.reclamation;
+package com.dev.liwa.reclamation.Profile;
 
 import android.content.Context;
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,9 +14,15 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-import com.dev.liwa.reclamation.Profile.EditProfileFragment;
-import com.dev.liwa.reclamation.Profile.SignOutFragment;
+import com.dev.liwa.reclamation.R;
 import com.dev.liwa.reclamation.Utils.SectionsStatePagerAdapter;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -37,6 +45,7 @@ public class AccountSettingActivity extends AppCompatActivity {
         mRelativeLayout = (RelativeLayout) findViewById(R.id.relLayout1);
         setupFragments();
         setupSettingList();
+        getIncomingIntent();
 
 
 
@@ -64,6 +73,17 @@ public class AccountSettingActivity extends AppCompatActivity {
         mViewPager.setCurrentItem(fragmentNumber);
     }
 
+    private void   getIncomingIntent (){
+        Intent intent = getIntent();
+        if (intent.hasExtra(getString(R.string.calling_activity))){
+            Log.d(TAG,"getIncomingIntent : received incoming intent from Profile Activity");
+            setViewPager(pagerAdapter.getFragmentNumber(getString(R.string.edit_profile_fragment)));
+
+        }
+
+
+    }
+
     private void setupSettingList(){
         ListView listView = (ListView) findViewById(R.id.lvAccountSettings);
         ArrayList<String> options = new ArrayList<>();
@@ -79,4 +99,6 @@ public class AccountSettingActivity extends AppCompatActivity {
             }
         });
     }
+
+
 }

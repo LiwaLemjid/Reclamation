@@ -23,7 +23,7 @@
         <activity android:name=".MapActivity" />
         <activity android:name=".FavoritesActivity" />
         <activity android:name=".AddActivity" />
-        <activity android:name=".AccountSettingActivity" />
+        <activity android:name=".Profile.AccountSettingActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".RegisterActivity"></activity>
     </application>
