@@ -3,7 +3,9 @@
     package="com.dev.liwa.reclamation">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -22,10 +24,11 @@
         <activity android:name=".Profile.ProfileActivity" />
         <activity android:name=".MapActivity" />
         <activity android:name=".FavoritesActivity" />
-        <activity android:name=".AddActivity" />
+        <activity android:name=".Share.AddActivity" />
         <activity android:name=".Profile.AccountSettingActivity" />
-        <activity android:name=".LoginActivity" />
-        <activity android:name=".RegisterActivity"></activity>
+        <activity android:name=".Login.LoginActivity" />
+        <activity android:name=".Login.RegisterActivity" />
+        <activity android:name=".Share.NextActivity"></activity>
     </application>
 
 </manifest>

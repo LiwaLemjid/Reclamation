@@ -1,4 +1,4 @@
-package com.dev.liwa.reclamation;
+package com.dev.liwa.reclamation.Login;
 
 import android.support.v7.app.AppCompatActivity;
 import android.content.Context;
@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.dev.liwa.reclamation.R;
 import com.dev.liwa.reclamation.Utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -148,6 +149,8 @@ public class RegisterActivity extends AppCompatActivity {
                             //add new user to the database
                             //add new user_account_settings to the database
                             firebaseMethods.addNewUser(email,username,password,"","");
+                            Toast.makeText(mContext, "Signup successful. Sending verification Email", Toast.LENGTH_SHORT).show();
+                            mAuth.signOut();
                         }
 
                         @Override
@@ -155,6 +158,8 @@ public class RegisterActivity extends AppCompatActivity {
 
                         }
                     });
+
+                    finish();
 
 
                 } else {

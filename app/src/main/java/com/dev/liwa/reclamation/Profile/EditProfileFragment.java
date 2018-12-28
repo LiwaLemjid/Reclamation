@@ -1,6 +1,7 @@
 package com.dev.liwa.reclamation.Profile;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TextView;
 
 import com.dev.liwa.reclamation.Dialog.ConfirmPasswordDialog;
 import com.dev.liwa.reclamation.Models.User;
@@ -21,6 +23,7 @@ import com.dev.liwa.reclamation.Models.UserAccountSettings;
 import com.dev.liwa.reclamation.Models.UserSettings;
 import com.dev.liwa.reclamation.R;
 import com.dev.liwa.reclamation.Utils.FirebaseMethods;
+import com.dev.liwa.reclamation.Share.AddActivity;
 import com.dev.liwa.reclamation.Utils.UniversalImageLoader;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,6 +39,8 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import org.w3c.dom.Text;
 
@@ -108,6 +113,7 @@ public class EditProfileFragment extends Fragment implements
     }
 
     private static final String TAG = "EditProfileFragment";
+    private TextView mChangeProfilePhoto;
     private CircleImageView mProfilePhoto;
 
     //firebase
@@ -120,7 +126,6 @@ public class EditProfileFragment extends Fragment implements
     //Edit profile fragment widgets
 
     private EditText mDisplayName,mUsername ,mEmail,mPassword, mRepeatPassword ;
-    private TextView mChangeProfilePhoto ;
     private String userID;
 
     //variable
@@ -155,6 +160,20 @@ public class EditProfileFragment extends Fragment implements
                 getActivity().finish();
             }
         });
+
+
+
+        mChangeProfilePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG,"OnClick : Changing profile photo");
+                Intent intent = new Intent(getActivity(), AddActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                getActivity().startActivity(intent);
+                getActivity().finish();
+            }
+        });
+
 
         setupFirebaseAuth();
         setProfileImage();

@@ -13,7 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TableLayout;
 
-import com.dev.liwa.reclamation.LoginActivity;
+import com.dev.liwa.reclamation.Login.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
