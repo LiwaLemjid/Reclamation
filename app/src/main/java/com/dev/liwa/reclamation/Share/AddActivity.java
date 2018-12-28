@@ -63,6 +63,10 @@ public class AddActivity extends AppCompatActivity {
 
     }
 
+    public int getTask(){
+        return getIntent().getFlags();
+    }
+
     public int getCurrentTabNumber(){
         return mViewPager.getCurrentItem();
     }

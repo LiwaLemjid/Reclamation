@@ -1,4 +1,5 @@
 package com.dev.liwa.reclamation.Share;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -15,6 +16,7 @@ import android.widget.ProgressBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.dev.liwa.reclamation.Profile.AccountSettingActivity;
 import com.dev.liwa.reclamation.R;
 import com.dev.liwa.reclamation.Utils.FilePaths;
 import com.dev.liwa.reclamation.Utils.FileSearch;
@@ -44,6 +46,7 @@ public class GalleryFragment extends Fragment {
     //vars
     private ArrayList<String> directories;
     private String mAppend = "file:/";
+    private String mSelectedImage;
 
     @Nullable
     @Override
@@ -51,7 +54,7 @@ public class GalleryFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_gallery, container, false);
         Log.d(TAG, "onCreateView: started.");
 
-        ImageLoader.getInstance().init(ImageLoaderConfiguration.createDefault(getActivity()));
+        ImageLoader.getInstance().init(ImageLoaderConfiguration.createDefault(getActivity() ));
 
         galleryImage = (ImageView) view.findViewById(R.id.galleryImageView);
         gridView = (GridView) view.findViewById(R.id.gridView);
@@ -75,12 +78,35 @@ public class GalleryFragment extends Fragment {
             public void onClick(View v) {
                 Log.d(TAG, "onClick: navigating to the final share screen.");
 
+                if(isRootTask()){
+                    Intent intent = new Intent(getActivity(), NextActivity.class);
+                    intent.putExtra("selected_image", mSelectedImage);
+                    startActivity(intent);
+                }else {
+                    Intent intent = new Intent(getActivity(), AccountSettingActivity.class);
+                    intent.putExtra("selected_image", mSelectedImage);
+                    intent.putExtra(getString(R.string.return_to_fragment), getString(R.string.edit_profile_fragment));
+                    startActivity(intent);
+                    getActivity().finish();
+                }
+
+
 
             }
         });
         init();
 
         return view;
+    }
+
+
+    private boolean isRootTask(){
+        if(((AddActivity)getActivity()).getTask() == 0){
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 
 
@@ -91,6 +117,8 @@ public class GalleryFragment extends Fragment {
         if(FileSearch.getDirectoryPaths(filePaths.PICTURES) != null){
             directories = FileSearch.getDirectoryPaths(filePaths.PICTURES);
         }
+
+
 
         directories.add(filePaths.CAMERA);
 
@@ -133,12 +161,14 @@ public class GalleryFragment extends Fragment {
         //set the first image to be displayed when the activity fragment view is inflated
         setImage(imgURLs.get(0), galleryImage, mAppend);
 
+        mSelectedImage = imgURLs.get(0);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Log.d(TAG, "onItemClick: selected an image: " + imgURLs.get(position));
 
                 setImage(imgURLs.get(position), galleryImage, mAppend);
+                mSelectedImage = imgURLs.get(position);
             }
         });
 
