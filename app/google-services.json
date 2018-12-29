@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "612273252226",
+    "firebase_url": "https://reclamation-339fb.firebaseio.com",
+    "project_id": "reclamation-339fb",
+    "storage_bucket": "reclamation-339fb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:612273252226:android:877fe5638e64985c",
+        "android_client_info": {
+          "package_name": "com.dev.liwa.reclamation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "612273252226-k6ip8683vm824csscmmsnlem9i02vubj.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.dev.liwa.reclamation",
+            "certificate_hash": "4ece28d05c5b9e7b18780b207a33582cbc7442ef"
+          }
+        },
+        {
+          "client_id": "612273252226-v4g6cgpkf8stbg80gomn5s190q136sdn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC7-urG7ipxnWxS-IFI0G4tYFoyMNr7biM"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "612273252226-v4g6cgpkf8stbg80gomn5s190q136sdn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
