@@ -1,6 +1,7 @@
 package com.dev.liwa.reclamation.Utils;
 
 import android.content.Context;
+import android.provider.ContactsContract;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -12,6 +13,7 @@ import com.dev.liwa.reclamation.Home.MainActivity;
 import com.dev.liwa.reclamation.Models.Photo;
 import com.dev.liwa.reclamation.Models.User;
 import com.dev.liwa.reclamation.Models.UserAccountSettings;
+import com.dev.liwa.reclamation.Models.UserSettings;
 import com.dev.liwa.reclamation.Profile.AccountSettingActivity;
 import com.dev.liwa.reclamation.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -33,6 +35,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class FirebaseMethods {
 
@@ -328,4 +334,132 @@ public class FirebaseMethods {
 
     }
 
+    /**
+     * Retireves the account settings for the user currently logged in
+     * Database : user_account_settings node
+     *
+     * @param dataSnapshot
+     * @return
+     */
+    public UserSettings getUserSettings(DataSnapshot dataSnapshot) {
+        Log.d(TAG, "getUserAccountSettings:retrieving user account settings");
+
+
+        UserAccountSettings settings = new UserAccountSettings();
+        User user = new User();
+
+        for (DataSnapshot ds : dataSnapshot.getChildren()) {
+
+            //user_account_settings node
+            if (ds.getKey().equals(mContext.getString(R.string.dbname_user_account_settings))) {
+                Log.d(TAG, "getUserAccountSettings: " + ds.child(userID).getValue(UserAccountSettings.class));
+
+                try {
+
+
+                    settings.setDisplay_name(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getDisplay_name()
+                    );
+                    settings.setUsername(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getUsername()
+                    );
+                    settings.setDescription(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getDescription()
+                    );
+                    settings.setProfile_photo(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getProfile_photo()
+                    );
+                    settings.setFollowers(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getFollowers()
+                    );
+                    settings.setFollowing(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getFollowing()
+                    );
+                    settings.setPosts(
+                            ds.child(userID)
+                                    .getValue(UserAccountSettings.class)
+                                    .getPosts()
+                    );
+                } catch (NullPointerException e) {
+                    Log.e(TAG, "NullPointerException" + e.getMessage());
+                }
+            }
+
+            if (ds.getKey().equals(mContext.getString(R.string.dbname_users))) {
+                HashMap<String,String> ld = (HashMap<String, String>) ds.child(userID).getValue();
+                for (Map.Entry<String,String>a:ld.entrySet()) {
+
+                    Log.d(TAG, "getUser: " + a.getKey());
+                    Log.d(TAG, "getUser: " + a.getValue());
+
+                }
+                user.setUsername(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getUsername()
+                );
+                user.setEmail(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getEmail()
+                );
+                user.setUser_id(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getUser_id()
+                );
+                user.setPassword(
+                        ds.child(userID)
+                                .getValue(User.class)
+                                .getPassword()
+                );
+
+            }
+        }
+        return new UserSettings(user, settings);
+
+    }
+
+    /**
+     * update the email in the 'user's' node and 'usersetting node
+     * @param username
+     */
+    public void updateUsername (String username ){
+        Log.d(TAG,"Updating username to "+username);
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(userID)
+                .child(mContext.getString(R.string.field_username))
+                .setValue(username);
+
+        myRef.child(mContext.getString(R.string.dbname_user_account_settings))
+                .child(userID)
+                .child(mContext.getString(R.string.field_username))
+                .setValue(username);
+    }
+
+    /**
+     * update the email in the 'user's' node
+     * @param email
+     */
+    public void updateEmail(String email){
+        Log.d(TAG, "updateEmail: upadting email to: " + email);
+
+        myRef.child(mContext.getString(R.string.dbname_users))
+                .child(userID)
+                .child(mContext.getString(R.string.field_email))
+                .setValue(email);
+
+    }
 }

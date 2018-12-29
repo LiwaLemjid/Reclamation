@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TableLayout;
 
 import com.dev.liwa.reclamation.Login.LoginActivity;
 import com.google.firebase.auth.FirebaseAuth;
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
         setupViewPager();
-        //mAuth.signOut();
+       // mAuth.signOut();
     }
 
     private void setupViewPager (){

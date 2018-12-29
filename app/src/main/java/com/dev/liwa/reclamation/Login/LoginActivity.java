@@ -4,6 +4,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.dev.liwa.reclamation.Home.MainActivity;
+import com.dev.liwa.reclamation.Profile.ProfileActivity;
 import com.dev.liwa.reclamation.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
