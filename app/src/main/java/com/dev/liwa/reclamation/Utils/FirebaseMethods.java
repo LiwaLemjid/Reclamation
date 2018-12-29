@@ -72,7 +72,8 @@ public class FirebaseMethods {
 
 
 
-    public void uploadNewPhoto(String photoType, final String caption, int count, String imgUrl){
+    public void uploadNewPhoto(String photoType, final String caption,final int count, final String imgUrl,
+                               Bitmap bm){
         Log.d(TAG, "uploadNewPhoto: attempting to uplaod new photo.");
 
         FilePaths filePaths = new FilePaths();
@@ -85,7 +86,10 @@ public class FirebaseMethods {
                     .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/photo" + (count + 1));
 
             //convert image url to bitmap
-            Bitmap bm = ImageManager.getBitmap(imgUrl);
+            if(bm == null){
+                bm = ImageManager.getBitmap(imgUrl);
+            }
+
             byte[] bytes = ImageManager.getBytesFromBitmap(bm, 100);
 
             UploadTask uploadTask = null;
@@ -94,11 +98,22 @@ public class FirebaseMethods {
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Uri firebaseUrl = taskSnapshot.getUploadSessionUri();
+                    Task<Uri> firebaseUrl = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+
+
+                    firebaseUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+
+                            String photoLink = uri.toString();
+                            addPhotoToDatabase(caption, photoLink);
+
+                        }
+                    });
 
                     //System.out.println("download url"+firebaseUrl.toString());
                     Toast.makeText(mContext, "photo upload success", Toast.LENGTH_SHORT).show();
-                    addPhotoToDatabase(caption, firebaseUrl.toString());
+
                     mContext.startActivity(new Intent(mContext, MainActivity.class));
 
                     //add the new photo to 'photos' node and 'user_photos' node
@@ -131,10 +146,7 @@ public class FirebaseMethods {
         else if(photoType.equals(mContext.getString(R.string.profile_photo))){
             Log.d(TAG, "uploadNewPhoto: uploading new PROFILE photo");
 
-            ((AccountSettingActivity)mContext).setViewPager(
-                    ((AccountSettingActivity)mContext).pagerAdapter
-                            .getFragmentNumber(mContext.getString(R.string.edit_profile_fragment))
-            );
+
 
 
             String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
@@ -142,7 +154,9 @@ public class FirebaseMethods {
                     .child(filePaths.FIREBASE_IMAGE_STORAGE + "/" + user_id + "/profile_photo");
 
             //convert image url to bitmap
-            Bitmap bm = ImageManager.getBitmap(imgUrl);
+            if(bm == null){
+                bm = ImageManager.getBitmap(imgUrl);
+            }
             byte[] bytes = ImageManager.getBytesFromBitmap(bm, 100);
 
             UploadTask uploadTask = null;
@@ -151,12 +165,29 @@ public class FirebaseMethods {
             uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
                 public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Uri firebaseUrl = taskSnapshot.getUploadSessionUri();
+                    Task<Uri> firebaseUrl = taskSnapshot.getMetadata().getReference().getDownloadUrl();
+
+
+                    firebaseUrl.addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String photoLink = uri.toString();
+                            setProfilePhoto(photoLink);
+
+
+                            ((AccountSettingActivity)mContext).setViewPager(
+                                    ((AccountSettingActivity)mContext).pagerAdapter
+                                            .getFragmentNumber(mContext.getString(R.string.edit_profile_fragment))
+                            );
+                        }
+                    });
+
+
 
                     Toast.makeText(mContext, "photo upload success", Toast.LENGTH_SHORT).show();
 
                     //insert into 'user_account_settings' node
-                    setProfilePhoto(firebaseUrl.toString());
+
 
 
                 }

@@ -121,6 +121,7 @@ public class ProfileFragment extends Fragment {
         ImageLoader.getInstance().init(universalImageLoader.getConfig());
 
 
+        System.out.println("Photo     :"+settings.getProfile_photo());
         UniversalImageLoader.setImage(settings.getProfile_photo(),mProfilePhoto,null,"");
         mDsiplayName.setText(settings.getDisplay_name());
         mUserName.setText(settings.getUsername());

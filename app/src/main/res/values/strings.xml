@@ -22,6 +22,7 @@
     <string name="confirm_password_dialog">ConfirmPasswordDialog</string>
 
     <!-- Intents Extra -->
+    <string name="selected_bitmap">selected_bitmap</string>
     <!-- activity_names -->
     <string name="dbname_photos">photos</string>
     <string name="dbname_user_photos">user_photos</string>
