@@ -159,9 +159,13 @@ public class GalleryFragment extends Fragment {
         gridView.setAdapter(adapter);
 
         //set the first image to be displayed when the activity fragment view is inflated
-        setImage(imgURLs.get(0), galleryImage, mAppend);
+        try {
+            setImage(imgURLs.get(0), galleryImage, mAppend);
+            mSelectedImage = imgURLs.get(0);
+        }catch (ArrayIndexOutOfBoundsException ex){
+            Log.d(TAG, "setupGridView: ArrayIndexOutOfBoundsException "+ex.getMessage());
+        }
 
-        mSelectedImage = imgURLs.get(0);
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {

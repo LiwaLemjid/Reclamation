@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.dev.liwa.reclamation.Home.MainActivity;
 import com.dev.liwa.reclamation.Utils.ButtomNavigationHelper;
 
 import java.util.Map;
@@ -20,7 +21,7 @@ public class MapActivity extends AppCompatActivity {
         setContentView(R.layout.activity_map);
         navigation = (BottomNavigationView) findViewById(R.id.bottomNavViewBar);
         ButtomNavigationHelper.setupButtomNavigationView(navigation);
-        ButtomNavigationHelper.enableNavigation(MapActivity.this, navigation);
+        ButtomNavigationHelper.enableNavigation(MapActivity.this, this, navigation);
 
         Menu menu = navigation.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);

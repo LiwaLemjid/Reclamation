@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.dev.liwa.reclamation.Home.MainActivity;
 import com.dev.liwa.reclamation.Utils.ButtomNavigationHelper;
 
 public class FavoritesActivity extends AppCompatActivity {
@@ -18,7 +19,7 @@ public class FavoritesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_favorites);
         navigation = (BottomNavigationView) findViewById(R.id.bottomNavViewBar);
         ButtomNavigationHelper.setupButtomNavigationView(navigation);
-        ButtomNavigationHelper.enableNavigation(FavoritesActivity.this, navigation);
+        ButtomNavigationHelper.enableNavigation(FavoritesActivity.this, this, navigation);
         Menu menu = navigation.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);

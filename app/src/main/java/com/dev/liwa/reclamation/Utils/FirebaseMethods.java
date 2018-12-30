@@ -90,7 +90,7 @@ public class FirebaseMethods {
                 bm = ImageManager.getBitmap(imgUrl);
             }
 
-            byte[] bytes = ImageManager.getBytesFromBitmap(bm, 100);
+            byte[] bytes = ImageManager.getBytesFromBitmap(bm, 1000);
 
             UploadTask uploadTask = null;
             uploadTask = storageReference.putBytes(bytes);
@@ -157,7 +157,7 @@ public class FirebaseMethods {
             if(bm == null){
                 bm = ImageManager.getBitmap(imgUrl);
             }
-            byte[] bytes = ImageManager.getBytesFromBitmap(bm, 100);
+            byte[] bytes = ImageManager.getBytesFromBitmap(bm, 1000);
 
             UploadTask uploadTask = null;
             uploadTask = storageReference.putBytes(bytes);
@@ -355,7 +355,8 @@ public class FirebaseMethods {
                 0,
                 0,
                 profile_photo,
-                username
+                username,
+                userID
 
         );
 

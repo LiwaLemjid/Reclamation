@@ -10,6 +10,7 @@
     <!-- Firebase database fields -->
     <string name="dbname_users">users</string>
     <string name="dbname_user_account_settings">user_account_settings</string>
+    <string name="field_user_id">user_id</string>
 
 
 
@@ -17,6 +18,7 @@
     <!--Fragment Names -->
     <string name="profile_fragment">Profile</string>
     <string name="edit_profile_fragment">Edit Profile</string>
+    <string name="view_post_fragment">View Post</string>
 
     <!--Dialog Names -->
     <string name="confirm_password_dialog">ConfirmPasswordDialog</string>
@@ -41,6 +43,11 @@
     <string name="calling_activity">calling_activity</string>
     <string name="selected_image">selected_image</string>
     <string name="return_to_fragment">return_to_fragment</string>
+
+
+    <!-- Bundle arg names -->
+    <string name="activity_number">activity_number</string>
+
 
     <!-- activity names -->
     <string name="profile_activity">Profile Activity</string>

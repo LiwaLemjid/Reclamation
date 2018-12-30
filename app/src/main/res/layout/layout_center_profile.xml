@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/relLayout1"
-            android:background="@drawable/white_grey_border_bottom">
+            android:background="@color/white">
 
             <LinearLayout
                 android:id="@+id/linLayout"
@@ -36,7 +36,7 @@
                         android:layout_height="80dp"
                         android:layout_centerVertical="true"
                         app:civ_border_color="@color/black"
-                        app:civ_border_width="2dp"/>
+                        app:civ_border_width="0.5dp"/>
 
 
                 </RelativeLayout>
@@ -99,7 +99,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/linLayout2"
-                android:layout_marginBottom="50dp">
+                android:layout_marginBottom="50dp"
+                android:background="@drawable/white_grey_border_bottom">
 
                 <GridView
                     android:id="@+id/gridView"

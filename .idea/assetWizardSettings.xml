@@ -33,7 +33,9 @@
                                   </option>
                                   <option name="values">
                                     <map>
-                                      <entry key="outputName" value="ic_black_x" />
+                                      <entry key="assetType" value="IMAGE" />
+                                      <entry key="imageAsset" value="$USER_HOME$/Downloads/icons8-speech-bubble-96.png" />
+                                      <entry key="outputName" value="ic_speech_bubble" />
                                       <entry key="theme" value="CUSTOM" />
                                       <entry key="themeColor" value="000000" />
                                     </map>

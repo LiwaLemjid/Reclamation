@@ -20,7 +20,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.dev.liwa.reclamation.R;
 import com.dev.liwa.reclamation.Utils.ButtomNavigationHelper;
 
-public class MainActivity extends AppCompatActivity {
+public class  MainActivity extends AppCompatActivity {
     private static final String  TAG="MainActivity";
 
     private static final int ACTIVITY_NUM = 0;
@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
         navigation = (BottomNavigationView) findViewById(R.id.bottomNavViewBar);
         setupFirebaseAuth();
         //navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-        ButtomNavigationHelper.enableNavigation(MainActivity.this, navigation);
+        ButtomNavigationHelper.enableNavigation(MainActivity.this, this, navigation);
         Menu menu = navigation.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
