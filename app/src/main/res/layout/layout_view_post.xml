@@ -65,7 +65,7 @@
                 android:layout_height="50dp"
                 android:id="@+id/relLayout2"
                 android:layout_below="@+id/post_image"
-                android:background="@color/white ">
+                android:background="@color/white">
 
                 <RelativeLayout
                     android:layout_width="60dp"
