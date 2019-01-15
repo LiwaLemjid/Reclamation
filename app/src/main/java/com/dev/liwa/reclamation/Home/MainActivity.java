@@ -5,22 +5,50 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TableLayout;
 
 import com.dev.liwa.reclamation.Login.LoginActivity;
+import com.dev.liwa.reclamation.Models.Photo;
+import com.dev.liwa.reclamation.Models.UserAccountSettings;
+import com.dev.liwa.reclamation.Utils.MainfeedListAdapter;
+import com.dev.liwa.reclamation.Utils.UniversalImageLoader;
+import com.dev.liwa.reclamation.ViewCommentsFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import com.dev.liwa.reclamation.R;
 import com.dev.liwa.reclamation.Utils.ButtomNavigationHelper;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
-public class  MainActivity extends AppCompatActivity {
+public class  MainActivity extends AppCompatActivity implements
+        MainfeedListAdapter.OnLoadMoreItemsListener {
+
+
+
+
+
+    @Override
+    public void onLoadMoreItems() {
+        Log.d(TAG, "onLoadMoreItems: displaying more photos");
+        HomeFragment fragment = (HomeFragment)getSupportFragmentManager()
+        .findFragmentByTag("android:switcher:" + R.id.container12 + ":" + mViewPager.getCurrentItem());
+        if(fragment != null){
+            fragment.displayMorePhotos();
+        }
+    }
+
+
+
     private static final String  TAG="MainActivity";
 
     private static final int ACTIVITY_NUM = 0;
@@ -30,6 +58,10 @@ public class  MainActivity extends AppCompatActivity {
     //firebase
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
+
+    private ViewPager mViewPager;
+    private FrameLayout mFrameLayout;
+    private RelativeLayout mRelativeLayout;
 /*
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -77,11 +109,62 @@ public class  MainActivity extends AppCompatActivity {
         //navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
         ButtomNavigationHelper.enableNavigation(MainActivity.this, this, navigation);
         Menu menu = navigation.getMenu();
+        mFrameLayout = (FrameLayout) findViewById(R.id.container);
+        mRelativeLayout = (RelativeLayout) findViewById(R.id.relLayoutParent);
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
+        initImageLoader();
         setupViewPager();
+
+
+
        // mAuth.signOut();
     }
+
+    public void onCommentThreadSelected(Photo photo, UserAccountSettings settings){
+        Log.d(TAG, "onCommentThreadSelected: selected a comment thread");
+
+        ViewCommentsFragment fragment  = new ViewCommentsFragment();
+        Bundle args = new Bundle();
+        args.putParcelable(getString(R.string.bundle_photo), photo);
+        args.putParcelable(getString(R.string.bundle_user_account_settings), settings);
+        fragment.setArguments(args);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragment);
+        transaction.addToBackStack(getString(R.string.view_comments_fragment));
+        transaction.commit();
+
+    }
+
+
+    public void hideLayout(){
+        Log.d(TAG, "hideLayout: hiding layout");
+        mRelativeLayout.setVisibility(View.GONE);
+        mFrameLayout.setVisibility(View.VISIBLE);
+    }
+
+
+    public void showLayout(){
+        Log.d(TAG, "hideLayout: showing layout");
+        mRelativeLayout.setVisibility(View.VISIBLE);
+        mFrameLayout.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if(mFrameLayout.getVisibility() == View.VISIBLE){
+            showLayout();
+        }
+    }
+
+
+    private void initImageLoader(){
+        UniversalImageLoader universalImageLoader = new UniversalImageLoader(mContext);
+        ImageLoader.getInstance().init(universalImageLoader.getConfig());
+    }
+
 
     private void setupViewPager (){
         SectionPagerAdapter adapter = new SectionPagerAdapter(getSupportFragmentManager());

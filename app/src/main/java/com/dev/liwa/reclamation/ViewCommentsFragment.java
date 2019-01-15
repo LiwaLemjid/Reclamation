@@ -228,6 +228,7 @@ public class ViewCommentsFragment extends Fragment {
             }
         };
 
+        /*
 
         if(mPhoto.getComments().size() == 0){
             mComments.clear();
@@ -240,7 +241,7 @@ public class ViewCommentsFragment extends Fragment {
             setupWidgets();
         }
 
-
+*/
 
         setupWidgets();
 

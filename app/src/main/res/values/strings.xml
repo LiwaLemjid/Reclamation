@@ -11,8 +11,10 @@
     <string name="dbname_users">users</string>
     <string name="dbname_user_account_settings">user_account_settings</string>
     <string name="field_user_id">user_id</string>
+    <string name="dbname_following">following</string>
+    <string name="dbname_followers">followers</string>
 
-
+    <string name="home_activity">Home Activity</string>
 
 
     <!--Fragment Names -->
@@ -43,10 +45,13 @@
     <string name="calling_activity">calling_activity</string>
     <string name="selected_image">selected_image</string>
     <string name="return_to_fragment">return_to_fragment</string>
+    <string name="intent_user">intent_user</string>
 
 
     <!-- Bundle arg names -->
     <string name="activity_number">activity_number</string>
+    <string name="bundle_photo">bundle_photo</string>
+    <string name="bundle_user_account_settings">bundle_user_account_settings</string>
 
 
     <!-- activity names -->
@@ -67,4 +72,5 @@
     <string name="field_image_path">image_path</string>
     <string name="view_comments_fragment">View Comments</string>
     <string name="field_comments">comments</string>
+    <string name="view_profile_fragment">ViewProfile</string>
 </resources>
