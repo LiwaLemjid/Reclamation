@@ -73,4 +73,7 @@
     <string name="view_comments_fragment">View Comments</string>
     <string name="field_comments">comments</string>
     <string name="view_profile_fragment">ViewProfile</string>
+
+
+    <string name="access_token">pk.eyJ1IjoibGl3YS1sZW1qaWQiLCJhIjoiY2pwZW1kOTJyMDFuODNwcWh5NGJlYTRqMCJ9.pY5bkG_oPpfvipibruplHA</string>
 </resources>

@@ -9,13 +9,21 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.dev.liwa.reclamation.Home.MainActivity;
+import com.dev.liwa.reclamation.Models.Image;
 import com.dev.liwa.reclamation.Models.Photo;
 import com.dev.liwa.reclamation.Models.User;
 import com.dev.liwa.reclamation.Models.UserAccountSettings;
 import com.dev.liwa.reclamation.Models.UserSettings;
 import com.dev.liwa.reclamation.Profile.AccountSettingActivity;
 import com.dev.liwa.reclamation.R;
+import com.dev.liwa.reclamation.Share.NextActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -106,7 +114,47 @@ public class FirebaseMethods {
                         public void onSuccess(Uri uri) {
 
                             String photoLink = uri.toString();
+                            //System.out.println("photoLink........"+photoLink);
                             addPhotoToDatabase(caption, photoLink);
+                            Image i = new Image();
+                            i.setPath(photoLink);
+
+
+
+
+                                RequestQueue MyRequestQueue = Volley.newRequestQueue(mContext);
+                                String URL_ADD_POST="http://192.168.43.32:8888/rec/web/app_dev.php/s/photos/new";
+                                StringRequest MyStringRequest = new StringRequest(Request.Method.POST, URL_ADD_POST, new Response.Listener<String>() {
+                                    @Override
+                                    public void onResponse(String response) {
+                                        //This code is executed if the server responds, whether or not the response contains data.
+                                        //The String 'response' contains the server's response.
+                                        System.out.println(response);
+
+                                        Toast.makeText(mContext, "Attempting to upload new photo", Toast.LENGTH_SHORT).show();
+                                    }
+                                }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+                                    @Override
+                                    public void onErrorResponse(VolleyError error) {
+                                        error.printStackTrace();
+                                        //This code is executed if there is an error.
+                                    }
+                                }) {
+
+
+                                    protected Map<String, String> getParams() {
+
+                                        Map<String, String> MyData = new HashMap<String, String>();
+                                        MyData.put("path", photoLink); //Add the data you'd like to send to the server.
+
+                                        return MyData;
+                                    }
+                                };
+                                MyRequestQueue.add(MyStringRequest);
+
+
+
+
 
                         }
                     });

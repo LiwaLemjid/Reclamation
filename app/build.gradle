@@ -2,6 +2,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
 
 android {
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.dev.liwa.reclamation"
@@ -17,6 +21,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+}
+repositories {
+    mavenCentral()
 }
 
 dependencies {
@@ -41,4 +48,6 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:16.0.6'
     implementation 'net.gotev:uploadservice:2.1'
     implementation 'com.koushikdutta.ion:ion:2.1.9'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:6.0.1'
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-locationlayer:0.5.0'
 }

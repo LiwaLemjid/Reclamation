@@ -1,5 +1,6 @@
 package com.dev.liwa.reclamation.Login;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.content.Context;
 import android.os.Bundle;
@@ -13,6 +14,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.dev.liwa.reclamation.Home.MainActivity;
+import com.dev.liwa.reclamation.Models.User;
 import com.dev.liwa.reclamation.R;
 import com.dev.liwa.reclamation.Utils.FirebaseMethods;
 import com.google.firebase.auth.FirebaseAuth;
@@ -23,9 +32,14 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
+
 public class RegisterActivity extends AppCompatActivity {
 
     private static final String TAG = "RegisterActivity";
+    private static final String URL_REGISTER = "http://192.168.1.17:8888/rec/web/app_dev.php/s/users/new";
 
     private Context mContext;
     private String email, username, password;
@@ -53,10 +67,18 @@ public class RegisterActivity extends AppCompatActivity {
 
 
         initWidgets();
-        init();
         setupFirebaseAuth();
+        init();
+
 
     }
+
+
+
+
+
+
+
 
     private void init(){
         btnRegister.setOnClickListener(new View.OnClickListener() {
@@ -71,10 +93,66 @@ public class RegisterActivity extends AppCompatActivity {
                     loadingPleaseWait.setVisibility(View.VISIBLE);
 
                     firebaseMethods.registerNewEmail(email, password, username);
+
+
+                    signUp(username, email, password);
                 }
             }
         });
     }
+
+
+    public void signUp(String username, String email, String password){
+
+
+        RequestQueue MyRequestQueue = Volley.newRequestQueue(RegisterActivity.this);
+
+        //final String url = "http://192.168.43.59:3000/users/register";
+
+        StringRequest MyStringRequest = new StringRequest(Request.Method.POST, URL_REGISTER, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                //This code is executed if the server responds, whether or not the response contains data.
+                //The String 'response' contains the server's response.
+                if(!response.equals("Email already used")) {
+
+                    System.out.println(response);
+                    User u=new User();
+
+
+                    System.out.println(u.toString());
+                    Toast.makeText(RegisterActivity.this, "Sign Up success",Toast.LENGTH_SHORT).show();
+
+
+                }
+                else{
+                    Toast.makeText(RegisterActivity.this, "Email already used",Toast.LENGTH_SHORT).show();
+                }
+            }
+        }, new Response.ErrorListener() { //Create an error listener to handle errors appropriately.
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+                //This code is executed if there is an error.
+            }
+        }) {
+            protected Map<String, String> getParams() {
+
+
+
+                Map<String, String> MyData = new HashMap<String, String>();
+                MyData.put("email", email); //Add the data you'd like to send to the server.
+                MyData.put("password", password); //Add the data you'd like to send to the server.
+                MyData.put("username", username);
+                return MyData;
+            }
+        };
+        MyRequestQueue.add(MyStringRequest);
+    }
+
+
+
+
 
     private boolean checkInputs(String email, String username, String password){
         Log.d(TAG, "checkInputs: checking inputs for null values.");

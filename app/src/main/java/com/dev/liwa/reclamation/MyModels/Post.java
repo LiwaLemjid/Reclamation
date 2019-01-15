@@ -16,7 +16,8 @@ public class Post implements Parcelable {
     private double lng;
     private String titre;
     private String description;
-    private String path;
+
+    private String created_at;
 
 
     public Post() {
@@ -65,13 +66,7 @@ public class Post implements Parcelable {
         return idpub;
     }
 
-    public String getPath() {
-        return path;
-    }
 
-    public void setPath(String path) {
-        this.path = path;
-    }
 
     public void setIdpub(int idpub) {
         this.idpub = idpub;
@@ -155,6 +150,14 @@ public class Post implements Parcelable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(String created_at) {
+        this.created_at = created_at;
     }
 
     @Override

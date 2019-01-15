@@ -3,13 +3,13 @@ package com.dev.liwa.reclamation.MyModels;
 public class Likes {
 
     private int id;
-    private int idpost;
+    private String idpost;
     private int userid;
 
     public Likes() {
     }
 
-    public Likes(int id, int idpost, int userid) {
+    public Likes(int id, String idpost, int userid) {
         this.id = id;
         this.idpost = idpost;
         this.userid = userid;
@@ -23,11 +23,11 @@ public class Likes {
         this.id = id;
     }
 
-    public int getIdpost() {
+    public String getIdpost() {
         return idpost;
     }
 
-    public void setIdpost(int idpost) {
+    public void setIdpost(String idpost) {
         this.idpost = idpost;
     }
 

@@ -17,10 +17,12 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.dev.liwa.reclamation.Constants;
 import com.dev.liwa.reclamation.Models.Comment;
 import com.dev.liwa.reclamation.MyModels.Comments;
 import com.dev.liwa.reclamation.Models.Like;
 import com.dev.liwa.reclamation.Models.Photo;
+import com.dev.liwa.reclamation.MyModels.Likes;
 import com.dev.liwa.reclamation.MyModels.Post;
 import com.dev.liwa.reclamation.R;
 import com.dev.liwa.reclamation.Utils.MainfeedListAdapter;
@@ -45,8 +47,8 @@ import java.util.Map;
 
 public class HomeFragment extends Fragment {
     private static final String TAG="HomeFragment";
-    public static final String URL_PUBS = "http://localhost:8888/rec/web/app_dev.php/s/posts/";
-    private static final String URL_COMMENTS = "http://localhost:8888/rec/web/app_dev.php/s/posts/";
+    //public static final String URL_PUBS = "http://192.168.1.17:8888/rec/web/app_dev.php/s/posts/";
+
 
     //vars
     private ArrayList<Photo> mPhotos;
@@ -55,7 +57,10 @@ public class HomeFragment extends Fragment {
     private MainfeedListAdapter mAdapter;
     private ArrayList<Photo> mPaginatedPhotos;
     private int mResults;
+    private  ArrayList<Comments> mComments;
+    private  ArrayList<Likes> mLikes;
     Context context;
+
 
 
 
@@ -86,9 +91,12 @@ public class HomeFragment extends Fragment {
 
     private void getAllPosts(){
         final ArrayList<Post> posts = new ArrayList<>();
+        final ArrayList<Photo> photos = new ArrayList<>();
+        final ArrayList<Comment> commentArrayList = new ArrayList<>();
+        final ArrayList<Like> likeArrayList = new ArrayList<>();
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST,
-                URL_PUBS,
+                Constants.URL_PUBLICATIONS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -100,7 +108,52 @@ public class HomeFragment extends Fragment {
                                 post.setTag(((JSONObject)jsonArray.get(i)).get("tag").toString());
                                 post.setTitre(((JSONObject)jsonArray.get(i)).get("titre").toString());
                                 post.setUserid(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("userid").toString()));
-                                post.setPath("");
+                                post.setIdpub(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("idpub").toString()));
+                                post.setCreated_at(((JSONObject)jsonArray.get(i)).get("created_at").toString());
+
+
+                                Photo photo = new Photo();
+                                photo.setCaption(((JSONObject)jsonArray.get(i)).get("description").toString());
+                                photo.setDate_created(((JSONObject)jsonArray.get(i)).get("created_at").toString());
+                                photo.setTags(((JSONObject)jsonArray.get(i)).get("tag").toString());
+                                photo.setUser_id(((JSONObject)jsonArray.get(i)).get("userid").toString());
+                                photo.setPhoto_id(((JSONObject)jsonArray.get(i)).get("idpub").toString());
+
+                                for(Comments comments : mComments){
+                                    if(comments.getIdpost().equals(photo.getPhoto_id())){
+                                        Comment c = new Comment();
+                                        c.setComment(comments.getTextcomment());
+                                        c.setDate_created(comments.getCreated_at());
+                                        c.setUser_id(""+comments.getUserid());
+                                        commentArrayList.add(c);
+                                    }
+                                }
+                                photo.setComments(commentArrayList);
+
+                                for(Likes likes : mLikes){
+                                    if(likes.getIdpost().equals(photo.getPhoto_id())){
+                                        Like l = new Like();
+                                        l.setUser_id(""+likes.getUserid());
+
+                                        likeArrayList.add(l);
+                                    }
+                                }
+                                photo.setLikes(likeArrayList);
+
+
+
+
+                                mPhotos.add(photo);
+                                photos.add(photo);
+
+
+                                //getting all the comments
+                                getComments(post);
+
+                                //getting all the likes
+                                getLikes(post.getIdpub());
+
+
                                 posts.add(post);
 
                             }
@@ -124,11 +177,11 @@ public class HomeFragment extends Fragment {
 
 
 
-    private void getComments(){
-        final ArrayList<Comments> commentsArrayList = new ArrayList<Comments>();
+    private void getComments(Post post){
+        mComments = new ArrayList<Comments>();
         StringRequest stringRequest = new StringRequest(
                 Request.Method.POST,
-                URL_COMMENTS,
+                Constants.URL_COMMENTS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -137,9 +190,16 @@ public class HomeFragment extends Fragment {
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 Comments comments = new Comments();
 
+
                                 comments.setTextcomment(((JSONObject)jsonArray.get(i)).get("textcomment").toString());
                                 comments.setCreated_at(((JSONObject)jsonArray.get(i)).get("created_at").toString());
-                                //commentsArrayList.add(comments);
+                                mComments.add(comments);
+
+                                //photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
+
+
+
+
 
                             }
 
@@ -160,6 +220,45 @@ public class HomeFragment extends Fragment {
         requestQueue.add(stringRequest);
 
     }
+
+    private void getLikes(int id){
+        mLikes = new ArrayList<>();
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.POST,
+                Constants.URL_COMMENTS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                Likes likes = new Likes();
+
+                                likes.setIdpost(((JSONObject)jsonArray.get(i)).get("idpost").toString());
+                                likes.setId(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("id").toString()));
+                                likes.setUserid(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("userid").toString()));
+                                mLikes.add(likes);
+
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        requestQueue.add(stringRequest);
+
+    }
+
 
     private void getFollowing(){
         Log.d(TAG, "getFollowing: searching for following");
@@ -248,6 +347,39 @@ public class HomeFragment extends Fragment {
             }
         });
 
+    }
+
+    private void displayAllPosts(){
+        mPaginatedPhotos = new ArrayList<>();
+        if(mPhotos != null){
+            try{
+                Collections.sort(mPhotos, new Comparator<Photo>() {
+                    @Override
+                    public int compare(Photo o1, Photo o2) {
+                        return o2.getDate_created().compareTo(o1.getDate_created());
+                    }
+                });
+
+                int iterations = mPhotos.size();
+
+                if(iterations > 10){
+                    iterations = 10;
+                }
+
+                mResults = 10;
+                for(int i = 0; i < iterations; i++){
+                    mPaginatedPhotos.add(mPhotos.get(i));
+                }
+
+                mAdapter = new MainfeedListAdapter(getActivity(), R.layout.layout_mainfeed_listitem, mPaginatedPhotos);
+                mListView.setAdapter(mAdapter);
+
+            }catch (NullPointerException e){
+                Log.e(TAG, "displayPhotos: NullPointerException: " + e.getMessage() );
+            }catch (IndexOutOfBoundsException e){
+                Log.e(TAG, "displayPhotos: IndexOutOfBoundsException: " + e.getMessage() );
+            }
+        }
     }
 
 
