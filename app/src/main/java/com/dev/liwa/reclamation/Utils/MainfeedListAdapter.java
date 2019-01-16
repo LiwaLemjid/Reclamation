@@ -15,12 +15,20 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.dev.liwa.reclamation.Constants;
 import com.dev.liwa.reclamation.Home.MainActivity;
 import com.dev.liwa.reclamation.Models.Comment;
 import com.dev.liwa.reclamation.Models.Like;
 import com.dev.liwa.reclamation.Models.Photo;
 import com.dev.liwa.reclamation.Models.User;
 import com.dev.liwa.reclamation.Models.UserAccountSettings;
+import com.dev.liwa.reclamation.MyModels.Likes;
 import com.dev.liwa.reclamation.Profile.ProfileActivity;
 import com.dev.liwa.reclamation.R;
 import com.google.firebase.auth.FirebaseAuth;
@@ -31,6 +39,10 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -116,7 +128,7 @@ public class MainfeedListAdapter extends ArrayAdapter<Photo> {
         }
 
         //get the current users username (need for checking likes string)
-        getCurrentUsername();
+        //getCurrentUsername();
 
         //get likes string
         getLikesString(holder);
@@ -148,6 +160,45 @@ public class MainfeedListAdapter extends ArrayAdapter<Photo> {
         final ImageLoader imageLoader = ImageLoader.getInstance();
         imageLoader.displayImage(getItem(position).getImage_path(), holder.image);
 
+        System.out.println("User id ..."+getItem(position).getUser_id());
+
+
+
+
+        StringRequest stringRequest2 = new StringRequest(
+                Request.Method.GET,
+                Constants.URL_USER_SHOW+getItem(position).getUser_id()+"/show",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONObject jsonArray = new JSONObject(response);
+                            holder.username.setText(jsonArray.getString("username"));
+                            imageLoader.displayImage(jsonArray.getString("path"),
+                                    holder.mprofileImage);
+                            System.out.println("username..."+jsonArray.getString("username"));
+
+
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+
+        RequestQueue requestQueue1 = Volley.newRequestQueue(getContext());
+        requestQueue1.add(stringRequest2);
+
+
+
+
 
         //get the profile image and username
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
@@ -166,6 +217,10 @@ public class MainfeedListAdapter extends ArrayAdapter<Photo> {
                             + singleSnapshot.getValue(UserAccountSettings.class).getUsername());
 
                     holder.username.setText(singleSnapshot.getValue(UserAccountSettings.class).getUsername());
+
+
+
+
                     holder.username.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

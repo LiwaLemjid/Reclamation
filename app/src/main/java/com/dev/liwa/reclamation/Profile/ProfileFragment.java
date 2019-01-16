@@ -20,12 +20,22 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.dev.liwa.reclamation.Constants;
 import com.dev.liwa.reclamation.Models.Comment;
 import com.dev.liwa.reclamation.Models.Like;
 import com.dev.liwa.reclamation.Models.Photo;
 import com.dev.liwa.reclamation.Models.User;
 import com.dev.liwa.reclamation.Models.UserAccountSettings;
 import com.dev.liwa.reclamation.Models.UserSettings;
+import com.dev.liwa.reclamation.MyModels.Comments;
+import com.dev.liwa.reclamation.MyModels.Likes;
+import com.dev.liwa.reclamation.MyModels.Post;
 import com.dev.liwa.reclamation.R;
 import com.dev.liwa.reclamation.Utils.ButtomNavigationHelper;
 import com.dev.liwa.reclamation.Utils.FirebaseMethods;
@@ -41,12 +51,17 @@ import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
 
 public class ProfileFragment extends Fragment {
 
@@ -76,6 +91,11 @@ public class ProfileFragment extends Fragment {
     private Context mcontext;
     private FirebaseMethods mFirebaseMethods ;
 
+    private ArrayList<Photo> mPhotos;
+    private  ArrayList<Comments> mComments;
+    private  ArrayList<Likes> mLikes;
+    Context context;
+
 
 
     @Nullable
@@ -97,6 +117,7 @@ public class ProfileFragment extends Fragment {
         profileMenu = (ImageView) view.findViewById(R.id.profileImage);
         bottomNavigationView = (BottomNavigationView) view.findViewById(R.id.bottomNavViewBar);
         mcontext = getActivity();
+        context = getActivity().getApplicationContext();
         mFirebaseMethods = new FirebaseMethods(getActivity());
         TextView editProfile = (TextView) view.findViewById(R.id.textEditProfile);
 
@@ -117,8 +138,10 @@ public class ProfileFragment extends Fragment {
        setupToolbar();
         setupFirebaseAuth();
 
+        getAllPosts();
 
-        setupGridView();
+
+
         editProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -142,6 +165,231 @@ public class ProfileFragment extends Fragment {
         }
         super.onAttach(context);
     }
+
+
+    private void getAllPosts(){
+        final ArrayList<Post> posts = new ArrayList<>();
+        final ArrayList<Photo> photos = new ArrayList<>();
+        final ArrayList<Comment> commentArrayList = new ArrayList<>();
+        final ArrayList<Like> likeArrayList = new ArrayList<>();
+        StringRequest stringRequest = new StringRequest(
+                Request.Method.GET,
+                Constants.URL_PUBLICATIONS,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                Post post = new Post();
+                                post.setDescription(((JSONObject)jsonArray.get(i)).get("description").toString());
+                                post.setTag(((JSONObject)jsonArray.get(i)).get("tag").toString());
+                                post.setTitre(((JSONObject)jsonArray.get(i)).get("titre").toString());
+                                post.setUserid(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("userid").toString()));
+                                post.setIdpub(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("idpub").toString()));
+                                post.setCreated_at(((JSONObject)jsonArray.get(i)).get("createdAt").toString());
+
+
+                                Photo photo = new Photo();
+                                photo.setCaption(((JSONObject)jsonArray.get(i)).get("description").toString());
+                                photo.setDate_created(((JSONObject)jsonArray.get(i)).get("createdAt").toString());
+                                photo.setTags(((JSONObject)jsonArray.get(i)).get("tag").toString());
+                                photo.setUser_id(((JSONObject)jsonArray.get(i)).get("userid").toString());
+                                photo.setPhoto_id(((JSONObject)jsonArray.get(i)).get("idpub").toString());
+                                photo.setImage_path(((JSONObject)jsonArray.get(i)).get("path").toString());
+
+
+
+
+
+
+
+
+
+
+
+
+                                //getting all the comments
+                                mComments = new ArrayList<Comments>();
+                                StringRequest stringRequest = new StringRequest(
+                                        Request.Method.GET,
+                                        Constants.URL_COMMENTS,
+                                        new Response.Listener<String>() {
+                                            @Override
+                                            public void onResponse(String response) {
+                                                try {
+                                                    JSONArray jsonArray = new JSONArray(response);
+                                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                                        Comments comments = new Comments();
+
+
+                                                        comments.setTextcomment(((JSONObject)jsonArray.get(i)).get("textcomment").toString());
+                                                        comments.setCreated_at(((JSONObject)jsonArray.get(i)).get("created_at").toString());
+                                                        mComments.add(comments);
+
+                                                        //photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
+
+
+
+
+
+                                                    }
+
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        },
+                                        new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+
+                                            }
+                                        }
+                                );
+
+                                RequestQueue requestQueue = Volley.newRequestQueue(context);
+                                requestQueue.add(stringRequest);
+
+
+
+
+
+
+
+
+
+
+
+                                for(Comments comments : mComments){
+                                    if(comments.getIdpost().equals(photo.getPhoto_id())){
+                                        Comment c = new Comment();
+                                        c.setComment(comments.getTextcomment());
+                                        c.setDate_created(comments.getCreated_at());
+                                        c.setUser_id(""+comments.getUserid());
+                                        commentArrayList.add(c);
+                                    }
+                                }
+                                photo.setComments(commentArrayList);
+
+
+
+
+                                //getting all the likes
+                                mLikes = new ArrayList<>();
+                                StringRequest stringRequest2 = new StringRequest(
+                                        Request.Method.GET,
+                                        Constants.URL_COMMENTS,
+                                        new Response.Listener<String>() {
+                                            @Override
+                                            public void onResponse(String response) {
+                                                try {
+                                                    JSONArray jsonArray = new JSONArray(response);
+                                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                                        Likes likes = new Likes();
+
+                                                        likes.setIdpost(((JSONObject)jsonArray.get(i)).get("idpost").toString());
+                                                        likes.setId(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("id").toString()));
+                                                        likes.setUserid(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("userid").toString()));
+                                                        mLikes.add(likes);
+
+                                                    }
+
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        },
+                                        new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+
+                                            }
+                                        }
+                                );
+
+                                RequestQueue requestQueue1 = Volley.newRequestQueue(context);
+                                requestQueue1.add(stringRequest2);
+
+
+
+
+
+                                for(Likes likes : mLikes){
+                                    if(likes.getIdpost().equals(photo.getPhoto_id())){
+                                        Like l = new Like();
+                                        l.setUser_id(""+likes.getUserid());
+
+                                        likeArrayList.add(l);
+                                    }
+                                }
+                                photo.setLikes(likeArrayList);
+
+
+
+
+
+                                photos.add(photo);
+
+
+
+
+
+
+
+
+
+                                posts.add(post);
+                                int gridWidth = getResources().getDisplayMetrics().widthPixels;
+                                int imageWidth = gridWidth/NUM_GRID_COLUMNS;
+                                gridView.setColumnWidth(imageWidth);
+
+                                ArrayList<String> imgUrls = new ArrayList<String>();
+                                for(int j = 0; j < photos.size(); j++){
+                                    imgUrls.add(photos.get(i).getImage_path());
+                                }
+                                GridImageAdapter adapter = new GridImageAdapter(getActivity(),R.layout.layout_grid_imageview,
+                                        "", imgUrls);
+                                gridView.setAdapter(adapter);
+
+                                gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                                        mOnGridImageSelectedListener.onGridImageSelected(photos.get(position), ACTIVITY_NUM);
+                                    }
+                                });
+
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            System.out.println("erreur");
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+
+                    }
+                }
+        );
+
+        RequestQueue requestQueue = Volley.newRequestQueue(context);
+        requestQueue.add(stringRequest);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     private void setupGridView(){

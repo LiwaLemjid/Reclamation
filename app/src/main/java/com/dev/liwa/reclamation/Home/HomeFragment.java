@@ -47,7 +47,7 @@ import java.util.Map;
 
 public class HomeFragment extends Fragment {
     private static final String TAG="HomeFragment";
-    //public static final String URL_PUBS = "http://192.168.1.17:8888/rec/web/app_dev.php/s/posts/";
+    public static final String URL_PUBS = "http://192.168.1.7:8888/rec/web/app_dev.php/s/posts/";
 
 
     //vars
@@ -79,9 +79,9 @@ public class HomeFragment extends Fragment {
 
 
 
+        getAllPosts();
 
-
-        getFollowing();
+        //getFollowing();
         //getAllPhotos();
 
 
@@ -95,7 +95,7 @@ public class HomeFragment extends Fragment {
         final ArrayList<Comment> commentArrayList = new ArrayList<>();
         final ArrayList<Like> likeArrayList = new ArrayList<>();
         StringRequest stringRequest = new StringRequest(
-                Request.Method.POST,
+                Request.Method.GET,
                 Constants.URL_PUBLICATIONS,
                 new Response.Listener<String>() {
                     @Override
@@ -109,15 +109,79 @@ public class HomeFragment extends Fragment {
                                 post.setTitre(((JSONObject)jsonArray.get(i)).get("titre").toString());
                                 post.setUserid(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("userid").toString()));
                                 post.setIdpub(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("idpub").toString()));
-                                post.setCreated_at(((JSONObject)jsonArray.get(i)).get("created_at").toString());
+                                post.setCreated_at(((JSONObject)jsonArray.get(i)).get("createdAt").toString());
 
 
                                 Photo photo = new Photo();
                                 photo.setCaption(((JSONObject)jsonArray.get(i)).get("description").toString());
-                                photo.setDate_created(((JSONObject)jsonArray.get(i)).get("created_at").toString());
+                                photo.setDate_created(((JSONObject)jsonArray.get(i)).get("createdAt").toString());
                                 photo.setTags(((JSONObject)jsonArray.get(i)).get("tag").toString());
                                 photo.setUser_id(((JSONObject)jsonArray.get(i)).get("userid").toString());
                                 photo.setPhoto_id(((JSONObject)jsonArray.get(i)).get("idpub").toString());
+                                photo.setImage_path(((JSONObject)jsonArray.get(i)).get("path").toString());
+
+
+
+
+
+
+
+
+
+
+
+
+                                //getting all the comments
+                                mComments = new ArrayList<Comments>();
+                                StringRequest stringRequest = new StringRequest(
+                                        Request.Method.GET,
+                                        Constants.URL_COMMENTS,
+                                        new Response.Listener<String>() {
+                                            @Override
+                                            public void onResponse(String response) {
+                                                try {
+                                                    JSONArray jsonArray = new JSONArray(response);
+                                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                                        Comments comments = new Comments();
+
+
+                                                        comments.setTextcomment(((JSONObject)jsonArray.get(i)).get("textcomment").toString());
+                                                        comments.setCreated_at(((JSONObject)jsonArray.get(i)).get("created_at").toString());
+                                                        mComments.add(comments);
+
+                                                        //photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
+
+
+
+
+
+                                                    }
+
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        },
+                                        new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+
+                                            }
+                                        }
+                                );
+
+                                RequestQueue requestQueue = Volley.newRequestQueue(context);
+                                requestQueue.add(stringRequest);
+
+
+
+
+
+
+
+
+
+
 
                                 for(Comments comments : mComments){
                                     if(comments.getIdpost().equals(photo.getPhoto_id())){
@@ -129,6 +193,49 @@ public class HomeFragment extends Fragment {
                                     }
                                 }
                                 photo.setComments(commentArrayList);
+
+
+
+
+                                //getting all the likes
+                                mLikes = new ArrayList<>();
+                                StringRequest stringRequest2 = new StringRequest(
+                                        Request.Method.GET,
+                                        Constants.URL_COMMENTS,
+                                        new Response.Listener<String>() {
+                                            @Override
+                                            public void onResponse(String response) {
+                                                try {
+                                                    JSONArray jsonArray = new JSONArray(response);
+                                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                                        Likes likes = new Likes();
+
+                                                        likes.setIdpost(((JSONObject)jsonArray.get(i)).get("idpost").toString());
+                                                        likes.setId(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("id").toString()));
+                                                        likes.setUserid(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("userid").toString()));
+                                                        mLikes.add(likes);
+
+                                                    }
+
+                                                } catch (JSONException e) {
+                                                    e.printStackTrace();
+                                                }
+                                            }
+                                        },
+                                        new Response.ErrorListener() {
+                                            @Override
+                                            public void onErrorResponse(VolleyError error) {
+
+                                            }
+                                        }
+                                );
+
+                                RequestQueue requestQueue1 = Volley.newRequestQueue(context);
+                                requestQueue1.add(stringRequest2);
+
+
+
+
 
                                 for(Likes likes : mLikes){
                                     if(likes.getIdpost().equals(photo.getPhoto_id())){
@@ -147,19 +254,21 @@ public class HomeFragment extends Fragment {
                                 photos.add(photo);
 
 
-                                //getting all the comments
-                                getComments(post);
 
-                                //getting all the likes
-                                getLikes(post.getIdpub());
+
+
+
+
 
 
                                 posts.add(post);
+                                displayPhotos();
 
                             }
 
                         } catch (JSONException e) {
                             e.printStackTrace();
+                            System.out.println("erreur");
                         }
                     }
                 },
@@ -175,91 +284,7 @@ public class HomeFragment extends Fragment {
         requestQueue.add(stringRequest);
     }
 
-
-
-    private void getComments(Post post){
-        mComments = new ArrayList<Comments>();
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.POST,
-                Constants.URL_COMMENTS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONArray jsonArray = new JSONArray(response);
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                Comments comments = new Comments();
-
-
-                                comments.setTextcomment(((JSONObject)jsonArray.get(i)).get("textcomment").toString());
-                                comments.setCreated_at(((JSONObject)jsonArray.get(i)).get("created_at").toString());
-                                mComments.add(comments);
-
-                                //photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
-
-
-
-
-
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }
-        );
-
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
-        requestQueue.add(stringRequest);
-
-    }
-
-    private void getLikes(int id){
-        mLikes = new ArrayList<>();
-        StringRequest stringRequest = new StringRequest(
-                Request.Method.POST,
-                Constants.URL_COMMENTS,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        try {
-                            JSONArray jsonArray = new JSONArray(response);
-                            for (int i = 0; i < jsonArray.length(); i++) {
-                                Likes likes = new Likes();
-
-                                likes.setIdpost(((JSONObject)jsonArray.get(i)).get("idpost").toString());
-                                likes.setId(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("id").toString()));
-                                likes.setUserid(Integer.parseInt(((JSONObject)jsonArray.get(i)).get("userid").toString()));
-                                mLikes.add(likes);
-
-                            }
-
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-
-                    }
-                }
-        );
-
-        RequestQueue requestQueue = Volley.newRequestQueue(context);
-        requestQueue.add(stringRequest);
-
-    }
-
-
+    //getting the following
     private void getFollowing(){
         Log.d(TAG, "getFollowing: searching for following");
 
@@ -288,66 +313,6 @@ public class HomeFragment extends Fragment {
         });
     }
 
-
-
-    private void getAllPhotos(){
-        Log.d(TAG, "getAllPhotos: getting all the photos ");
-        final ArrayList<Photo> photos = new ArrayList<>();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
-        Query query = reference
-                .child(getString(R.string.dbname_user_photos))
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid());
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                for ( DataSnapshot singleSnapshot :  dataSnapshot.getChildren()){
-                    Photo photo = new Photo();
-                    Map<String, Object> objectMap = (HashMap<String, Object>) singleSnapshot.getValue();
-
-                    photo.setCaption(objectMap.get(getString(R.string.field_caption)).toString());
-                    photo.setTags(objectMap.get(getString(R.string.field_tags)).toString());
-                    photo.setPhoto_id(objectMap.get(getString(R.string.field_photo_id)).toString());
-                    photo.setUser_id(objectMap.get(getString(R.string.field_user_id)).toString());
-                    photo.setDate_created(objectMap.get(getString(R.string.field_date_created)).toString());
-                    photo.setImage_path(objectMap.get(getString(R.string.field_image_path)).toString());
-
-
-                    ArrayList<Comment> comments = new ArrayList<Comment>();
-                    for (DataSnapshot dSnapshot : singleSnapshot
-                            .child(getString(R.string.field_comments)).getChildren()){
-                        Comment comment = new Comment();
-                        comment.setUser_id(dSnapshot.getValue(Comment.class).getUser_id());
-                        comment.setComment(dSnapshot.getValue(Comment.class).getComment());
-                        comment.setDate_created(dSnapshot.getValue(Comment.class).getDate_created());
-                        comments.add(comment);
-                    }
-
-                    photo.setComments(comments);
-
-                    List<Like> likesList = new ArrayList<Like>();
-                    for (DataSnapshot dSnapshot : singleSnapshot
-                            .child(getString(R.string.field_likes)).getChildren()){
-                        Like like = new Like();
-                        like.setUser_id(dSnapshot.getValue(Like.class).getUser_id());
-                        likesList.add(like);
-                    }
-                    photo.setLikes(likesList);
-                    photos.add(photo);
-                }
-                //setup our image grid
-                displayPhotos();
-
-
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                Log.d(TAG, "onCancelled: query cancelled.");
-            }
-        });
-
-    }
 
     private void displayAllPosts(){
         mPaginatedPhotos = new ArrayList<>();
@@ -449,6 +414,7 @@ public class HomeFragment extends Fragment {
 
     private void displayPhotos(){
         mPaginatedPhotos = new ArrayList<>();
+        System.out.println("photoooos"+mPhotos);
         if(mPhotos != null){
             try{
                 Collections.sort(mPhotos, new Comparator<Photo>() {

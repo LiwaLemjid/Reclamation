@@ -3,7 +3,15 @@ package com.dev.liwa.reclamation.Login;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.dev.liwa.reclamation.Home.MainActivity;
+import com.dev.liwa.reclamation.Models.User;
+import com.dev.liwa.reclamation.MyModels.Post;
 import com.dev.liwa.reclamation.Profile.ProfileActivity;
 import com.dev.liwa.reclamation.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -21,6 +29,16 @@ import android.widget.Toast;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.math.BigInteger;
+import java.util.HashMap;
+import java.util.Map;
+
+import static com.dev.liwa.reclamation.Constants.URL_LOGIN;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -52,6 +70,12 @@ public class LoginActivity extends AppCompatActivity {
 
         setupFirebaseAuth();
         init();
+
+
+
+
+
+
     }
 
 
@@ -66,6 +90,15 @@ public class LoginActivity extends AppCompatActivity {
             return false;
         }
     }
+
+
+
+
+
+
+
+
+
 
      /*
     ------------------------------------ Firebase ---------------------------------------------
